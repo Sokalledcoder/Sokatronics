@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <title>BORIS // AUDIO MATRIX</title>
+  </head>
+  <body>
+    <div id="app" class="app-root">
+      <div class="scene-noise" aria-hidden="true"></div>
+      <div class="scene-scanlines" aria-hidden="true"></div>
+
+      <main class="visualizer-shell">
+        <canvas id="visualizer-canvas" aria-label="3D audio visualizer"></canvas>
+        <div class="scene-vignette" aria-hidden="true"></div>
+
+        <section class="hud-panel" id="hud-panel" aria-label="Audio controls">
+          <header class="hud-header">
+            <div class="hud-brand">
+              <span class="brand-mark">BORIS</span>
+              <span class="brand-sub">AUDIO MATRIX</span>
+              <span class="brand-version">v0.2</span>
+            </div>
+            <div class="hud-status">
+              <span class="status-dot" id="status-dot"></span>
+              <span class="status-text" id="status-text">IDLE</span>
+              <span class="quality-pill" id="quality-pill">MEDIUM</span>
+            </div>
+          </header>
+
+          <div class="track-meta">
+            <p class="track-name" id="track-name">No track loaded</p>
+            <p class="track-detail" id="track-detail">Upload an audio file to begin</p>
+          </div>
+
+          <div class="control-row">
+            <input
+              id="file-input"
+              class="hidden-file-input"
+              type="file"
+              accept="audio/*"
+              aria-label="Upload audio file"
+            />
+            <button id="upload-btn" class="hud-btn hud-btn--accent" type="button">
+              Upload
+            </button>
+            <button id="play-pause-btn" class="hud-btn" type="button" disabled>
+              Play
+            </button>
+            <button id="back-btn" class="hud-btn" type="button" disabled>-10s</button>
+            <button id="forward-btn" class="hud-btn" type="button" disabled>+10s</button>
+          </div>
+
+          <div class="timeline-wrap">
+            <label class="sr-only" for="seek-slider">Track position</label>
+            <input
+              id="seek-slider"
+              class="seek-slider"
+              type="range"
+              min="0"
+              max="1000"
+              step="1"
+              value="0"
+              disabled
+            />
+            <div class="timeline-meta">
+              <span id="time-current">00:00</span>
+              <span id="time-total">00:00</span>
+            </div>
+          </div>
+
+          <div class="control-row control-row--compact">
+            <button id="mute-btn" class="hud-btn" type="button" disabled>Mute</button>
+            <label class="slider-wrap" for="volume-slider">
+              <span>VOL</span>
+              <input
+                id="volume-slider"
+                class="volume-slider"
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value="1"
+                disabled
+              />
+            </label>
+            <label class="select-wrap" for="rate-select">
+              <span>RATE</span>
+              <select id="rate-select" class="rate-select" disabled>
+                <option value="0.75">0.75x</option>
+                <option value="1" selected>1.00x</option>
+                <option value="1.25">1.25x</option>
+                <option value="1.5">1.50x</option>
+              </select>
+            </label>
+            <button id="loop-btn" class="hud-btn" type="button" disabled>Loop</button>
+          </div>
+
+          <div class="control-row control-row--compact control-row--tune">
+            <label class="select-wrap" for="quality-mode-select">
+              <span>QUALITY</span>
+              <select id="quality-mode-select" class="rate-select">
+                <option value="auto" selected>AUTO</option>
+                <option value="low">LOW</option>
+                <option value="medium">MEDIUM</option>
+                <option value="high">HIGH</option>
+              </select>
+            </label>
+            <label class="slider-wrap slider-wrap--wide" for="density-slider">
+              <span>DENSITY</span>
+              <input
+                id="density-slider"
+                class="volume-slider"
+                type="range"
+                min="25"
+                max="200"
+                step="1"
+                value="100"
+              />
+            </label>
+            <label class="slider-wrap slider-wrap--wide" for="size-slider">
+              <span>SIZE</span>
+              <input
+                id="size-slider"
+                class="volume-slider"
+                type="range"
+                min="50"
+                max="220"
+                step="1"
+                value="100"
+              />
+            </label>
+            <label class="select-wrap" for="palette-select">
+              <span>PALETTE</span>
+              <select id="palette-select" class="rate-select">
+                <option value="boris" selected>BORIS</option>
+                <option value="neon">NEON</option>
+                <option value="sunset">SUNSET</option>
+                <option value="ice">ICE</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="meter-grid">
+            <div class="meter-item">
+              <span>LOW</span>
+              <div class="meter-track">
+                <div id="meter-bass" class="meter-fill"></div>
+              </div>
+            </div>
+            <div class="meter-item">
+              <span>MID</span>
+              <div class="meter-track">
+                <div id="meter-mid" class="meter-fill"></div>
+              </div>
+            </div>
+            <div class="meter-item">
+              <span>HIGH</span>
+              <div class="meter-track">
+                <div id="meter-treble" class="meter-fill"></div>
+              </div>
+            </div>
+          </div>
+
+          <p id="hud-message" class="hud-message">WebGL2 check pending...</p>
+        </section>
+
+        <section id="fallback-card" class="fallback-card hidden" role="alert"></section>
+      </main>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
